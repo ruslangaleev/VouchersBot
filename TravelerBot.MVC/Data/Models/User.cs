@@ -22,5 +22,7 @@ namespace TravelerBot.MVC.Data.Models
         public bool IsBlocked { get; set; }
 
         public string AdditionalInfo { get; set; }
+
+        public StateType StateType { get; set; }
     }
 }

@@ -5,10 +5,12 @@ using System.Web;
 
 namespace TravelerBot.MVC.Data.Models
 {
-    public enum TransactionType
+    public enum StateType
     {
-        AddPublisher = 0,
+        Active = 0,
 
-        Start
+        Activated,
+
+        NotActivated
     }
 }

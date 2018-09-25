@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -10,6 +11,7 @@ using TravelerBot.MVC.Data.Models;
 using TravelerBot.MVC.Data.Repositories;
 using TravelerBot.MVC.Data.Repositories.Logic;
 using TravelerBot.MVC.ResourceModels;
+using Action = TravelerBot.Api.ResourceModels.Action;
 
 namespace TravelerBot.MVC.Controllers
 {
@@ -117,6 +119,39 @@ namespace TravelerBot.MVC.Controllers
 
         private async Task<ResponseModel> NewMethod(Message message, UserRepository userRepo, User user)
         {
+            if (user.TransactionType == TransactionType.Start)
+            {
+                var buttons = new Button[]
+                {
+                    new Button
+                    {
+                        color = "positive",
+                        action = new Action
+                        {
+                            label = "Добавить публикатора",
+                            type = "text",
+                            payload = JsonConvert.SerializeObject(new
+                            {
+                                button = "1"
+                            })
+                        }
+                    },
+                };
+
+                return new ResponseModel
+                {
+                    Message = $"Приветствую тебя в режиме администратора.",
+                    Keyboard = new Keyboard
+                    {
+                        OneTime = false,
+                        buttons = new[]
+                        {
+                            buttons
+                        }
+                    }
+                };
+            }
+
             if (message.ObjectMessage.Body == "Добавить публикатора")
             {
                 user.TransactionType = TransactionType.AddPublisher;
@@ -133,7 +168,16 @@ namespace TravelerBot.MVC.Controllers
             {
                 var roleUser = await userRepo.GetRoleAsync("PUBLISHER");
 
-                Random random = new Random();
+                var userFound = await userRepo.Get(Convert.ToInt32(message.ObjectMessage.Body));
+                if (userFound != null)
+                {
+                    return new ResponseModel
+                    {
+                        Message = "Пользователь с таким идентификатором аккаунта уже зарегистрирован."
+                    };
+                }
+
+                var random = new Random();
                 var password = random.Next(99999);
 
                 userRepo.Add(new User
@@ -147,15 +191,43 @@ namespace TravelerBot.MVC.Controllers
                         LifeTime = DateTime.UtcNow.AddHours(6),
                         Password = password.ToString()
                     }),
-                    TransactionType = TransactionType.NoActivate,
-                    IsBlocked = true
+                    TransactionType = TransactionType.Start,
+                    StateType = StateType.NotActivated,
                 });
+                //userRepo.SaveChanges();
+
+                user.TransactionType = TransactionType.Start;
+                userRepo.Update(user);
                 userRepo.SaveChanges();
 
+                var buttons = new Button[]
+                {
+                    new Button
+                    {
+                        color = "positive",
+                        action = new Action
+                        {
+                            label = "Добавить публикатора",
+                            type = "text",
+                            payload = JsonConvert.SerializeObject(new
+                            {
+                                button = "1"
+                            })
+                        }
+                    },
+                };
 
                 return new ResponseModel
                 {
-                    Message = $"Необходимо передать указанному пользователю код для активации аккаунта: {password}"
+                    Message = $"Пользователь успешно зарегистрирован. Необходимо передать указанному пользователю код для активации аккаунта: {password}",
+                    Keyboard = new Keyboard
+                    {
+                        OneTime = false,
+                        buttons = new[]
+                        {
+                            buttons
+                        }
+                    }
                 };
             }
 
