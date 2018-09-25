@@ -193,6 +193,7 @@
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Data\Models\OneTimePassword.cs" />
     <Compile Include="Data\Models\Role.cs" />
+    <Compile Include="Data\Models\StateType.cs" />
     <Compile Include="Data\Models\TransactionType.cs" />
     <Compile Include="Data\Models\User.cs" />
     <Compile Include="Data\Models\UserState.cs" />
@@ -202,45 +203,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201809121042459_InitialCreate.cs" />
-    <Compile Include="Migrations\201809121042459_InitialCreate.Designer.cs">
-      <DependentUpon>201809121042459_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201809121943308_Initial.cs" />
-    <Compile Include="Migrations\201809121943308_Initial.Designer.cs">
-      <DependentUpon>201809121943308_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201809140634163_AddFieldEdit.cs" />
-    <Compile Include="Migrations\201809140634163_AddFieldEdit.Designer.cs">
-      <DependentUpon>201809140634163_AddFieldEdit.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201809150529554_AddUser.cs" />
-    <Compile Include="Migrations\201809150529554_AddUser.Designer.cs">
-      <DependentUpon>201809150529554_AddUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201809151409205_AddNewFieldTrip.cs" />
-    <Compile Include="Migrations\201809151409205_AddNewFieldTrip.Designer.cs">
-      <DependentUpon>201809151409205_AddNewFieldTrip.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201809151618556_UpdateKeyTrip.cs" />
-    <Compile Include="Migrations\201809151618556_UpdateKeyTrip.Designer.cs">
-      <DependentUpon>201809151618556_UpdateKeyTrip.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201809151622593_Update1.cs" />
-    <Compile Include="Migrations\201809151622593_Update1.Designer.cs">
-      <DependentUpon>201809151622593_Update1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201809151626511_Update2.cs" />
-    <Compile Include="Migrations\201809151626511_Update2.Designer.cs">
-      <DependentUpon>201809151626511_Update2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201809151856270_Update3.cs" />
-    <Compile Include="Migrations\201809151856270_Update3.Designer.cs">
-      <DependentUpon>201809151856270_Update3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201809170850408_Update4.cs" />
-    <Compile Include="Migrations\201809170850408_Update4.Designer.cs">
-      <DependentUpon>201809170850408_Update4.cs</DependentUpon>
+    <Compile Include="Migrations\201809250653339_MigrateDB.cs" />
+    <Compile Include="Migrations\201809250653339_MigrateDB.Designer.cs">
+      <DependentUpon>201809250653339_MigrateDB.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -288,40 +253,13 @@
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201809121042459_InitialCreate.resx">
-      <DependentUpon>201809121042459_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201809121943308_Initial.resx">
-      <DependentUpon>201809121943308_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201809140634163_AddFieldEdit.resx">
-      <DependentUpon>201809140634163_AddFieldEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201809150529554_AddUser.resx">
-      <DependentUpon>201809150529554_AddUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201809151409205_AddNewFieldTrip.resx">
-      <DependentUpon>201809151409205_AddNewFieldTrip.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201809151618556_UpdateKeyTrip.resx">
-      <DependentUpon>201809151618556_UpdateKeyTrip.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201809151622593_Update1.resx">
-      <DependentUpon>201809151622593_Update1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201809151626511_Update2.resx">
-      <DependentUpon>201809151626511_Update2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201809151856270_Update3.resx">
-      <DependentUpon>201809151856270_Update3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201809170850408_Update4.resx">
-      <DependentUpon>201809170850408_Update4.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201809250653339_MigrateDB.resx">
+      <DependentUpon>201809250653339_MigrateDB.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

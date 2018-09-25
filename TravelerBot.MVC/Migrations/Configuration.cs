@@ -10,7 +10,6 @@ namespace TravelerBot.MVC.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "TravelerBot.MVC.Data.TripContext";
         }
 
         protected override void Seed(TravelerBot.MVC.Data.DatabaseContext context)

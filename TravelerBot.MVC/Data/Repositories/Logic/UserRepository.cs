@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using TravelerBot.MVC.Data.Models;
@@ -34,6 +35,11 @@ namespace TravelerBot.MVC.Data.Repositories
             return await  _context.Users
                 .Include(t => t.Role)
                 .FirstOrDefaultAsync(t => t.AccountId == accountId);
+        }
+
+        public async Task<IEnumerable<User>> Get()
+        {
+            return await _context.Users.ToListAsync();
         }
 
         public async Task<Role> GetRoleAsync(string role)

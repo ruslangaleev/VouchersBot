@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -42,6 +43,26 @@ namespace TravelerBot.MVC.Controllers
             {
                 var userRepo = new UserRepository();
 
+                var users = await userRepo.Get();
+                if (users.Count() == 0)
+                {
+                    var role = await userRepo.GetRoleAsync("ADMIN");
+
+                    userRepo.Add(new User()
+                    {
+                        AccountId = 14624192,
+                        CreateAt = DateTime.UtcNow.AddHours(5),
+                        Role = role,
+                        StateType = StateType.Activated,
+                        TransactionType = TransactionType.Start,
+                        UserId = Guid.NewGuid()
+                    });
+
+                    userRepo.SaveChanges();
+
+                    // TODO: Инициализировать роли
+                }
+
                 var user = await userRepo.Get(message.ObjectMessage.UserId);
 
                 var responseModel = new ResponseModel();
@@ -58,8 +79,25 @@ namespace TravelerBot.MVC.Controllers
                         responseModel = NewMethod1(message, userRepo, user);
                     }
                 }
+                else
+                {
+                    responseModel.Message = "Приветствую тебя в сервисе по доставке горящих туров в г.Уфы." +
+                        " Официальная бесплатная подписка будет открыта 30 сентября в 12:00 по МСК.";
+                }
 
-                var request = "https://api.vk.com/method/messages.send?user_id={message.ObjectMessage.UserId}&group_id={message.GroupId}&message={responseModel.Message}&v=5.80&access_token={_token}";
+                var request = string.Empty;
+                if (responseModel.Keyboard == null && !string.IsNullOrEmpty(responseModel.Message))
+                {
+                    request = $"https://api.vk.com/method/messages.send?user_id={message.ObjectMessage.UserId}&group_id={message.GroupId}&message={responseModel.Message}&v=5.80&access_token={_token}";
+                }
+                if (responseModel.Keyboard != null && string.IsNullOrEmpty(responseModel.Message))
+                {
+                    request = $"https://api.vk.com/method/messages.send?user_id={message.ObjectMessage.UserId}&group_id={message.GroupId}&keyboard={JsonConvert.SerializeObject(responseModel.Keyboard)}&v=5.80&access_token={_token}";
+                }
+                if (responseModel.Keyboard != null && !string.IsNullOrEmpty(responseModel.Message))
+                {
+                    request = $"https://api.vk.com/method/messages.send?user_id={message.ObjectMessage.UserId}&group_id={message.GroupId}&message={responseModel.Message}&keyboard={JsonConvert.SerializeObject(responseModel.Keyboard)}&v=5.80&access_token={_token}";
+                }
 
                 await _httpClient.GetAsync(request);
 
@@ -75,40 +113,64 @@ namespace TravelerBot.MVC.Controllers
 
         private ResponseModel NewMethod1(Message message, UserRepository userRepo, User user)
         {
-            if (message.ObjectMessage.Body == "Активировать")
+            if (user.TransactionType == TransactionType.Start)
             {
-                if (user.TransactionType != TransactionType.NoActivate)
+                if (user.StateType == StateType.NotActivated)
                 {
                     return new ResponseModel
                     {
-                        Message = "Ваш аккаунт уже активирован."
+                        Message = "Приветствую тебя в сервисе по доставке горящих туров в г.Уфы." +
+                        " Официальная бесплатная подписка будет открыта 30 сентября в 12:00 по МСК. " +
+                        "Если вы турагентство, нажмите на кнопку \"Для турагентство\" для активации аккаунта и размещения объявлений"
+                    };
+                }
+            }
+
+            if (message.ObjectMessage.Body == "Для турагентство")
+            {
+                if (user.StateType == StateType.NotActivated && user.TransactionType != TransactionType.Activate)
+                {
+                    user.TransactionType = TransactionType.Activate;
+                    userRepo.Update(user);
+                    userRepo.SaveChanges();
+
+                    return new ResponseModel
+                    {
+                        Message = "Ваш аккаунт еще не активирован. Введите код для активации..."
+                    };
+                }
+            }
+
+            if (user.StateType == StateType.NotActivated && user.TransactionType == TransactionType.Activate)
+            {
+                var oneTimePassword = JsonConvert.DeserializeObject<OneTimePassword>(user.AdditionalInfo);
+
+                if (oneTimePassword.Password != message.ObjectMessage.Body)
+                {
+                    return new ResponseModel
+                    {
+                        Message = "Не верный код."
                     };
                 }
 
-                user.TransactionType = TransactionType.Activate;
+                if (oneTimePassword.LifeTime < DateTime.UtcNow.AddHours(5))
+                {
+                    return new ResponseModel
+                    {
+                        Message = "Код активации просрочен. Необходимо ввести новый."
+                    };
+                }
+
+                user.StateType = StateType.Activated;
+                user.TransactionType = TransactionType.Start;
                 userRepo.Update(user);
                 userRepo.SaveChanges();
 
                 return new ResponseModel
                 {
-                    Message = "Введите код для активации аккаунта."
+                    Message = "Аккаунт успешно активирован. Напоминаю, полноценно сервис будет запущен 30 сентября в 12:00. " +
+                    "А сейчас, джите от вас новых новостей)"
                 };
-            }
-
-            if (user.TransactionType == TransactionType.Activate)
-            {
-                var oneTimePassword = JsonConvert.DeserializeObject<OneTimePassword>(user.AdditionalInfo);
-                if (oneTimePassword.LifeTime < DateTime.UtcNow.AddHours(5))
-                {
-                    return new ResponseModel
-                    {
-                        Message = "Код активации просрочен"
-                    };
-                }
-
-                user.IsBlocked = false;
-                userRepo.Update(user);
-                userRepo.SaveChanges();
             }
 
             return new ResponseModel

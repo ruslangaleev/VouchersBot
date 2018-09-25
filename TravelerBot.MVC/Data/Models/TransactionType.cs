@@ -9,6 +9,8 @@ namespace TravelerBot.MVC.Data.Models
     {
         AddPublisher = 0,
 
-        Start
+        Start,
+
+        Activate
     }
 }
