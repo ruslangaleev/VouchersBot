@@ -18,9 +18,9 @@ namespace TravelerBot.MVC.Controllers
 {
     public class ValuesController : ApiController
     {
-        private readonly string _secret = "q11w22e33r44";
+        private readonly string _secret = "qwe123678";
 
-        private readonly string _token = "195b278ff87d740cd559f757783973b80a545b828dd9ca102f9e100c5593290afb30cc38e00e6a714f06a";
+        private readonly string _token = "e2b69aa034023d603af674607b8e787b33bab6909128a39189a840eb9d47a130dcd6c2ee23fc6dbafc32f";
 
         private readonly static HttpClient _httpClient = new HttpClient();
 
@@ -30,7 +30,7 @@ namespace TravelerBot.MVC.Controllers
             if (message.Type == "confirmation")
             {
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
-                response.Content = new StringContent("6bc74ded", Encoding.UTF8, "text/plain");
+                response.Content = new StringContent("ef69905e", Encoding.UTF8, "text/plain");
                 return response;
             }
 
@@ -46,6 +46,23 @@ namespace TravelerBot.MVC.Controllers
                 var users = await userRepo.Get();
                 if (users.Count() == 0)
                 {
+                    userRepo.AddRangeRoles(new Role[]
+                    {
+                        new Role
+                        {
+                            Name = "ADMIN",
+                            RoleId = Guid.NewGuid()
+                        },
+                        new Role
+                        {
+                            Name = "PUBLISHER",
+                            RoleId = Guid.NewGuid()
+                        },
+                    });
+
+                    userRepo.SaveChanges();
+
+
                     var role = await userRepo.GetRoleAsync("ADMIN");
 
                     userRepo.Add(new User()
@@ -59,8 +76,6 @@ namespace TravelerBot.MVC.Controllers
                     });
 
                     userRepo.SaveChanges();
-
-                    // TODO: Инициализировать роли
                 }
 
                 var user = await userRepo.Get(message.ObjectMessage.UserId);
@@ -113,19 +128,6 @@ namespace TravelerBot.MVC.Controllers
 
         private ResponseModel NewMethod1(Message message, UserRepository userRepo, User user)
         {
-            if (user.TransactionType == TransactionType.Start)
-            {
-                if (user.StateType == StateType.NotActivated)
-                {
-                    return new ResponseModel
-                    {
-                        Message = "Приветствую тебя в сервисе по доставке горящих туров в г.Уфы." +
-                        " Официальная бесплатная подписка будет открыта 30 сентября в 12:00 по МСК. " +
-                        "Если вы турагентство, нажмите на кнопку \"Для турагентство\" для активации аккаунта и размещения объявлений"
-                    };
-                }
-            }
-
             if (message.ObjectMessage.Body == "Для турагентство")
             {
                 if (user.StateType == StateType.NotActivated && user.TransactionType != TransactionType.Activate)
@@ -137,6 +139,44 @@ namespace TravelerBot.MVC.Controllers
                     return new ResponseModel
                     {
                         Message = "Ваш аккаунт еще не активирован. Введите код для активации..."
+                    };
+                }
+            }
+
+            if (user.TransactionType == TransactionType.Start)
+            {
+                if (user.StateType == StateType.NotActivated)
+                {
+                    var buttons = new Button[]
+                    {
+                        new Button
+                        {
+                            color = "default",
+                            action = new Action
+                            {
+                                label = "Для турагентство",
+                                type = "text",
+                                payload = JsonConvert.SerializeObject(new
+                                {
+                                    button = "1"
+                                })
+                            }
+                        }
+                    };
+
+                    return new ResponseModel
+                    {
+                        Message = "Приветствую тебя в сервисе по доставке горящих туров в г.Уфы." +
+                        " Официальная бесплатная подписка будет открыта 30 сентября в 12:00 по МСК. " +
+                        "Если вы турагентство, нажмите на кнопку \"Для турагентство\" для активации аккаунта и размещения объявлений",
+                        Keyboard = new Keyboard
+                        {
+                            OneTime = false,
+                            buttons = new[]
+                            {
+                                buttons
+                            }
+                        }
                     };
                 }
             }
@@ -169,7 +209,7 @@ namespace TravelerBot.MVC.Controllers
                 return new ResponseModel
                 {
                     Message = "Аккаунт успешно активирован. Напоминаю, полноценно сервис будет запущен 30 сентября в 12:00. " +
-                    "А сейчас, джите от вас новых новостей)"
+                    "А сейчас, ждите от нас новых новостей)"
                 };
             }
 
@@ -181,6 +221,18 @@ namespace TravelerBot.MVC.Controllers
 
         private async Task<ResponseModel> NewMethod(Message message, UserRepository userRepo, User user)
         {
+            if (message.ObjectMessage.Body == "Добавить публикатора")
+            {
+                user.TransactionType = TransactionType.AddPublisher;
+                userRepo.Update(user);
+                userRepo.SaveChanges();
+
+                return new ResponseModel
+                {
+                    Message = "Необходимо указать идентификатор аккаунта пользователя в Вконтакте (только цифры)"
+                };
+            }
+
             if (user.TransactionType == TransactionType.Start)
             {
                 var buttons = new Button[]
@@ -211,18 +263,6 @@ namespace TravelerBot.MVC.Controllers
                             buttons
                         }
                     }
-                };
-            }
-
-            if (message.ObjectMessage.Body == "Добавить публикатора")
-            {
-                user.TransactionType = TransactionType.AddPublisher;
-                userRepo.Update(user);
-                userRepo.SaveChanges();
-
-                return new ResponseModel
-                {
-                    Message = "Необходимо указать идентификатор аккаунта пользователя в Вконтакте (только цифры)"
                 };
             }
 

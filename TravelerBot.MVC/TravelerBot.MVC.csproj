@@ -196,16 +196,15 @@
     <Compile Include="Data\Models\StateType.cs" />
     <Compile Include="Data\Models\TransactionType.cs" />
     <Compile Include="Data\Models\User.cs" />
-    <Compile Include="Data\Models\UserState.cs" />
     <Compile Include="Data\Repositories\Logic\UserRepository.cs" />
     <Compile Include="Data\Repositories\Logic\UserStateRepository.cs" />
     <Compile Include="Data\DatabaseContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201809250653339_MigrateDB.cs" />
-    <Compile Include="Migrations\201809250653339_MigrateDB.Designer.cs">
-      <DependentUpon>201809250653339_MigrateDB.cs</DependentUpon>
+    <Compile Include="Migrations\201809251251124_MigrateDB.cs" />
+    <Compile Include="Migrations\201809251251124_MigrateDB.Designer.cs">
+      <DependentUpon>201809251251124_MigrateDB.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -214,9 +213,9 @@
     <Compile Include="ResourceModels\ResponseModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\Trips.mdf" />
-    <Content Include="App_Data\Trips_log.ldf">
-      <DependentUpon>Trips.mdf</DependentUpon>
+    <Content Include="App_Data\DatabaseVouchers.mdf" />
+    <Content Include="App_Data\DatabaseVouchers_log.ldf">
+      <DependentUpon>DatabaseVouchers.mdf</DependentUpon>
     </Content>
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="favicon.ico" />
@@ -257,8 +256,8 @@
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201809250653339_MigrateDB.resx">
-      <DependentUpon>201809250653339_MigrateDB.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201809251251124_MigrateDB.resx">
+      <DependentUpon>201809251251124_MigrateDB.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

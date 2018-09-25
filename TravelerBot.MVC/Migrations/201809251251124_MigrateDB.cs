@@ -33,21 +33,12 @@ namespace TravelerBot.MVC.Migrations
                 .ForeignKey("dbo.Roles", t => t.RoleId, cascadeDelete: true)
                 .Index(t => t.RoleId);
             
-            CreateTable(
-                "dbo.UserStates",
-                c => new
-                    {
-                        UserStateId = c.Guid(nullable: false),
-                    })
-                .PrimaryKey(t => t.UserStateId);
-            
         }
         
         public override void Down()
         {
             DropForeignKey("dbo.Users", "RoleId", "dbo.Roles");
             DropIndex("dbo.Users", new[] { "RoleId" });
-            DropTable("dbo.UserStates");
             DropTable("dbo.Users");
             DropTable("dbo.Roles");
         }

@@ -47,6 +47,11 @@ namespace TravelerBot.MVC.Data.Repositories
             return await _context.Roles.FirstOrDefaultAsync(t => t.Name == role);
         }
 
+        public void AddRangeRoles(Role[] roles)
+        {
+            _context.Roles.AddRange(roles);
+        }
+
         public void SaveChanges()
         {
             _context.SaveChanges();

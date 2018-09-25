@@ -13,7 +13,7 @@ namespace TravelerBot.MVC.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201809250653339_MigrateDB"; }
+            get { return "201809251251124_MigrateDB"; }
         }
         
         string IMigrationMetadata.Source
